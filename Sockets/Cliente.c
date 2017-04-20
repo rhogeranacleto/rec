@@ -37,7 +37,7 @@ int main(int argc , char *argv[])
     while(1)
     {
         printf("Enter message : ");
-        scanf("%s" , message);
+        fgets(message, 100, stdin);
          
         //Send some data
         if( send(sock , message , strlen(message) , 0) < 0)
