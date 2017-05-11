@@ -13,24 +13,25 @@ int main(int argc , char *argv[])
     char message[1000] , server_reply[2000];
      
     //Create socket
-    sock = socket(AF_INET , SOCK_DGRAM, IPPROTO_UDP);
+    sock = socket(AF_INET , SOCK_STREAM , 0);
     if (sock == -1)
     {
         printf("Could not create socket");
-	return 1;
     }
-
     puts("Socket created");
      
-    memset((char *) &server, 0, sizeof(server));
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
-    server.sin_port = htons(8888);
+    server.sin_port = htons( 8888 );
  
-     if (inet_aton("127.0.0.1", &server.sin_addr) == 0) 
+    //Connect to remote server
+    if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0)
     {
-        printf("Could not create socket");
-	return 1;
+        perror("connect failed. Error");
+        return 1;
     }
+     
+    puts("Connected\n");
      
     //keep communicating with server
     while(1)
@@ -39,14 +40,14 @@ int main(int argc , char *argv[])
         fgets(message, 100, stdin);
          
         //Send some data
-        if( sendto(sock , message , strlen(message), 0, (struct sockaddr *) &server, sizeof(server)) <= 0)
+        if( send(sock , message , strlen(message) , 0) < 0)
         {
             puts("Send failed");
             return 1;
         }
          
         //Receive a reply from the server
-        if( recvfrom(sock, server_reply, 100, 0, (struct sockaddr *) &server, sizeof(server)) <= 0)
+        if( recv(sock , server_reply , 2000 , 0) < 0)
         {
             puts("recv failed");
             break;

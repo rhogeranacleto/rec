@@ -39,14 +39,14 @@ int main(int argc , char *argv[])
         fgets(message, 100, stdin);
          
         //Send some data
-        if( sendto(sock , message , strlen(message), 0, (struct sockaddr *) &server, sizeof(server)) <= 0)
+        if( sendto(sock , message , strlen(message), 0, (struct sockaddr *) &server, sizeof(server)) < 0)
         {
             puts("Send failed");
             return 1;
         }
          
         //Receive a reply from the server
-        if( recvfrom(sock, server_reply, 100, 0, (struct sockaddr *) &server, sizeof(server)) <= 0)
+        if( recvfrom(sock, server_reply, 2000, 0, (struct sockaddr *) &server, sizeof(server)) < 0)
         {
             puts("recv failed");
             break;

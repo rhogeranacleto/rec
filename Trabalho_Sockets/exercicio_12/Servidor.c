@@ -16,7 +16,7 @@ int main(int argc , char *argv[])
     char client_message[2000];
      
     //Create socket
-    socket_desc = socket(AF_INET , SOCK_DGRAM , 0);
+    socket_desc = socket(AF_INET , SOCK_STREAM , 0);
     if (socket_desc == -1)
     {
         printf("Could not create socket");
@@ -35,22 +35,34 @@ int main(int argc , char *argv[])
         perror("bind failed. Error");
         return 1;
     }
+    puts("bind done");
+     
+    //Listen
+    listen(socket_desc , 3);
+     
+    //Accept and incoming connection
+    puts("Waiting for incoming connections...");
+    c = sizeof(struct sockaddr_in);
+     
+    //accept connection from an incoming client
+    client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c);
+    if (client_sock < 0)
+    {
+        perror("accept failed");
+        return 1;
+    }
+    puts("Connection accepted");
      
     //Receive a message from client
-    while( 1 )
+    while( (read_size = recv(client_sock , client_message , 2000 , 0)) > 0 )
     {
         //Send the message back to client
         
-        if((read_size = recvfrom(socket_desc, client_message, 2000, 0, (struct sockaddr *) &server, sizeof(server))) >= 0){
-		
-		puts("Mensagem");
-		puts(client_message);
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
 
- 		if(sendto(socket_desc, client_message, 2000, 0, (struct sockaddr *) &server, sizeof(server)) < 0){
-
-			return 1;
-		}
-	}
+        sprintf(client_message,"now: %d-%d-%d %d:%d:%d\n",  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+        write(client_sock , client_message , strlen(client_message));
     }
      
     if(read_size == 0)
