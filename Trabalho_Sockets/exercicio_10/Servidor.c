@@ -43,14 +43,19 @@ int main(int argc , char *argv[])
         
         if((read_size = recvfrom(socket_desc, client_message, 2000, 0, (struct sockaddr *) &server, sizeof(server))) >= 0){
 		
-		puts("Mensagem");
+		    puts("nao recebeu");
+    	    return 1;
+    	}
+	
+    	puts("Mensagem");
 		puts(client_message);
+    
+	
+ 		if(sendto(socket_desc, client_message, read_size, 0, (struct sockaddr *) &server, sizeof(server)) < 0){
 
- 		if(sendto(socket_desc, client_message, 2000, 0, (struct sockaddr *) &server, sizeof(server)) < 0){
-
+            puts("Nao enviou");
 			return 1;
 		}
-	}
     }
      
     if(read_size == 0)
