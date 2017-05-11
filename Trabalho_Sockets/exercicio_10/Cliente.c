@@ -20,9 +20,9 @@ int main(int argc , char *argv[])
     }
     puts("Socket created");
      
-    server.sin_addr.s_addr = inet_addr("ip do servidor");
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
-    server.sin_port = htons( 8080 );
+    server.sin_port = htons( 8888 );
  
     //Connect to remote server
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0)
